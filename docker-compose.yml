@@ -4,3 +4,4 @@ services:
   web:
     build: .
     command: python manage.py runserver
+    working_dir: /app
