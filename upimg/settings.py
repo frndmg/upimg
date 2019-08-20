@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'minio',
 
-    'handler',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -145,7 +145,7 @@ LOGGING = {
             'handlers': ['console'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
         },
-        'handler': {
+        'api': {
             'handlers': ['console'],
             'level': 'DEBUG' if DEBUG else 'INFO',
         },
