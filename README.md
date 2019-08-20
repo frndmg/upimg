@@ -118,3 +118,22 @@ HTTP/1.1 201 Created
     21
 ]
 ```
+
+## Development environment
+
+* `.env` example
+
+```text
+SECRET_KEY=t*8qr+p-3%(zyb8d$%!u&un81w+_*wl#qpn$dmejbr3kr78qxm
+
+DJANGO_LOG_LEVEL=INFO
+
+DB_NAME=postgres
+DB_USER=postgres
+DB_PASS=mysecretpassword
+DB_HOST=db
+
+MINIO_HOST=fs
+MINIO_STORAGE_ACCESS_KEY=AKIAIOSFODNN7EXAMPLE
+MINIO_STORAGE_SECRET_KEY=wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY
+```
