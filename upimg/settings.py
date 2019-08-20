@@ -160,8 +160,14 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DATE_INPUT_FORMATS': ['iso-8601'],
 }
 
 
@@ -171,12 +177,9 @@ STATIC_URL = '/static/'
 STATIC_ROOT = './static_files/'
 
 DEFAULT_FILE_STORAGE = "minio_storage.storage.MinioMediaStorage"
-# STATICFILES_STORAGE = "minio_storage.storage.MinioStaticStorage"
 MINIO_STORAGE_ENDPOINT = '{}:9000'.format(os.environ.get('MINIO_HOST', 'minio'))
 MINIO_STORAGE_ACCESS_KEY = os.environ.get('MINIO_STORAGE_ACCESS_KEY', '')
 MINIO_STORAGE_SECRET_KEY = os.environ.get('MINIO_STORAGE_SECRET_KEY', '')
 MINIO_STORAGE_USE_HTTPS = False
 MINIO_STORAGE_MEDIA_BUCKET_NAME = 'local-media'
 MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = True
-# MINIO_STORAGE_STATIC_BUCKET_NAME = 'local-static'
-# MINIO_STORAGE_AUTO_CREATE_STATIC_BUCKET = True

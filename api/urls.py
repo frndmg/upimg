@@ -9,6 +9,6 @@ router.register('', views.ImageViewSet, basename='images')
 
 urlpatterns = [
     path('upload_link', views.upload_link, name='upload_link'),
-    path('upload/<slug:token>', views.ImageUploadView.as_view(), name='upload'),
+    path('upload/<slug:token>', views.upload_image, name='upload'),
     path('statistics', views.statistics, name='statistics'),
 ] + router.urls

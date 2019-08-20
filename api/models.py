@@ -33,5 +33,12 @@ class Image(models.Model):
 
 class UploadToken(models.Model):
     token = models.CharField(max_length=256)
+    
+    expire_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now=True)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tokens')
+
+    @property
+    def expired(self):
+        return self.expire_at >= timezone.now
