@@ -1,4 +1,5 @@
 import logging
+import base64
 
 from rest_framework import serializers
 
@@ -8,10 +9,10 @@ from . import models
 log = logging.getLogger(__name__)
 
 
-class ImageSerializer(serializers.Serializer):
+class ListImageSerializer(serializers.Serializer):
     images = serializers.ListField(
         child=serializers.ImageField(allow_empty_file=False,
-                                    use_url=False))
+                                     use_url=False))
 
     def create(self, validated_data):
         images = validated_data.pop('images')
@@ -20,7 +21,7 @@ class ImageSerializer(serializers.Serializer):
         for img in images:
             img = models.Image.objects.create(image=img, **validated_data)
             data.append(img.id)
-        
+
         return data
 
 

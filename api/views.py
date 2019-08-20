@@ -1,15 +1,19 @@
 import logging
+import base64
+import imghdr
 
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.http import HttpResponse
 from django.utils.crypto import get_random_string
 
 from rest_framework import views
 from rest_framework import parsers
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework import generics
 from rest_framework import status
-from rest_framework import permissions
+from rest_framework.permissions import AllowAny
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes, parser_classes
 
@@ -45,7 +49,7 @@ def upload_image(req, token):
     """
     Upload the image given the token
     """
-    serializer = serializers.ImageSerializer(data=req.data)
+    serializer = serializers.ListImageSerializer(data=req.data)
     if not serializer.is_valid():
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -53,9 +57,15 @@ def upload_image(req, token):
     return Response(ids, status=status.HTTP_201_CREATED)
 
 
-class ImageViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.ImageSerializer
-    queryset = models.Image.objects.all()
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_image(req, pk):
+    image = get_object_or_404(models.Image, pk=pk)
+    fp = image.image.open()
+    fmt = imghdr.what(fp) or '*'
+    data = fp.read()
+    fp.close()
+    return HttpResponse(data, content_type='image/{}'.format(fmt))
 
 
 @api_view(['GET'])
