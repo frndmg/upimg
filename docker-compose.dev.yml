@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:alpine
+    environment:
+    - POSTGRES_PASSWORD=mysecretpassword
+    volumes:
+    - db:/var/lib/postgresql/data
+    - ./postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    ports:
+    - 5432:5432
+
+  adminer:
+    image: adminer
+    ports:
+    - 8080:8080
+
+  fs:
+    image: minio/minio
+    command: server /data
+    environment:
+    - MINIO_ACCESS_KEY=AKIAIOSFODNN7EXAMPLE
+    - MINIO_SECRET_KEY=wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY
+    volumes:
+    - fs:/data
+    ports:
+    - 9000:9000
+
+  web:
+    env_file: .env
+    depends_on:
+    - db
+    - fs
+    volumes:
+    - .:/app
+    ports:
+    - 8000:8000
+
+volumes:
+  db:
+  fs:
