@@ -1,11 +1,14 @@
 import logging
 import base64
 import imghdr
+from datetime import timedelta
 
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseServerError
 from django.utils.crypto import get_random_string
+from django.db.models import Count
+from django.utils import timezone
 
 from rest_framework import views
 from rest_framework import parsers
@@ -69,14 +72,25 @@ def get_image(req, pk):
 
     return HttpResponseServerError('problem reading image')
 
+
 @api_view(['GET'])
 def statistics(req):
-    from django.db.models import Count
-
     common_models = models.Image.objects\
-            .values('meta__model', 'id')\
-            .annotate(count=Count('meta__model'))
-            # .annotate(model_count=Count('meta__model'))\
-            # .order_by('-model_count')[:10]
+        .filter(meta__has_key='Model')\
+        .values('meta__Model')\
+        .annotate(count=Count('meta__Model'))
 
-    return Response(common_models, status=status.HTTP_200_OK)
+    common_formats = models.Image.objects\
+        .filter(meta__has_key='format')\
+        .values('meta__format')\
+        .annotate(count=Count('meta__format'))
+
+    days = 30
+    upload_freq_per_day = models.Image.objects\
+        .filter(uploaded_at__gte=timezone.now() - timedelta(days=days)).count() / days 
+
+    return Response({
+        'common_models': common_models,
+        'common_formats': common_formats,
+        'uploaded_freq_per_day': upload_freq_per_day,
+    }, status=status.HTTP_200_OK)
