@@ -1,9 +1,14 @@
 import imghdr
 
+from django.conf import settings
+from django.dispatch import receiver
 from django.db import models
+from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import HStoreField, JSONField
 from django.utils import timezone
+
+from rest_framework.authtoken.models import Token
 
 import PIL
 from PIL.ExifTags import TAGS
@@ -38,12 +43,19 @@ class Image(models.Model):
 
 class UploadToken(models.Model):
     token = models.CharField(max_length=256)
-    
+
     expire_at = models.DateTimeField()
     created_at = models.DateTimeField(auto_now=True)
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tokens')
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='tokens')
 
     @property
     def expired(self):
         return self.expire_at <= timezone.now()
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)

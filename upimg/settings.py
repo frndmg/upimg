@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
 
     'rest_framework',
+    'rest_framework.authtoken',
     'minio',
 
     'api',
