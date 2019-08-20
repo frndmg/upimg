@@ -42,12 +42,14 @@ def upload_link(req):
 @parser_classes([parsers.MultiPartParser, parsers.FileUploadParser, ])
 @permission_classes([permissions.ImageUploadPermission, ])
 def upload_image(req, token):
-    ids = {}
+    """
+    Upload the image given the token
+    """
+    serializer = serializers.ImageSerializer(data=req.data)
+    if not serializer.is_valid():
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # TODO: This could be batched and procesed in multiple process
-    for k, v in req.data.items():
-        ids[k] = models.Image.objects.create(image=v).id
-
+    ids = serializer.save()
     return Response(ids, status=status.HTTP_201_CREATED)
 
 
@@ -56,5 +58,14 @@ class ImageViewSet(viewsets.ModelViewSet):
     queryset = models.Image.objects.all()
 
 
-def statistics():
-    pass
+@api_view(['GET'])
+def statistics(req):
+    from django.db.models import Count
+
+    common_models = models.Image.objects\
+            .values('meta__model', 'id')\
+            .annotate(count=Count('meta__model'))
+            # .annotate(model_count=Count('meta__model'))\
+            # .order_by('-model_count')[:10]
+
+    return Response(common_models, status=status.HTTP_200_OK)

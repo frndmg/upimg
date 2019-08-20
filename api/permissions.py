@@ -12,7 +12,7 @@ class ImageUploadPermission(BasePermission):
         except models.UploadToken.DoesNotExist:
             return False
 
-        if req.user != up_token.user:
+        if up_token.expired or req.user != up_token.user:
             return False
 
         return True
