@@ -9,3 +9,8 @@ migrate:
 
 web-console:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run web bash
+
+Pipenfile.lock:
+
+requirements.txt: Pipenfile.lock
+	pipenv lock --requirements > requirements.txt
