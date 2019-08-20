@@ -29,6 +29,8 @@ class Image(models.Model):
         except AttributeError:
             pass
 
+        meta['format'] = img.format
+
         self.meta = meta
 
         super(Image, self).save(*args, **kwargs)
