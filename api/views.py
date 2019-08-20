@@ -1,10 +1,15 @@
 import logging
 
-from django.shortcuts import render
 from rest_framework import views
 from rest_framework import parsers
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework import permissions
+
+from PIL import Image
+from PIL.ExifTags import TAGS
+
+from . import models
 
 log = logging.getLogger(__name__)
 
@@ -20,12 +25,13 @@ class ImageUploadView(views.APIView):
     permission_classes = (permissions.AllowAny,)  # For now
 
     def put(self, req, token, format=None):
-        # print(req)
-        for k, v in req.data.items():
-            # store file and return id
-            log.debug(f'{k} {v}')
+        ids = {}
 
-        return Response(status=204)
+        # TODO: This could be batched and procesed in multiple process
+        for k, v in req.data.items():
+            ids[k] = models.Image.objects.create(image=v).id
+
+        return Response(ids, status=status.HTTP_201_CREATED)
 
 
 def get_image(id):

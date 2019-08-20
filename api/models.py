@@ -2,12 +2,33 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import HStoreField
 
+import PIL
+from PIL.ExifTags import TAGS
+
 
 class Image(models.Model):
     image = models.ImageField(upload_to='images/')
-    meta = HStoreField(max_length=256)
+    meta = HStoreField()
 
     uploaded_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        img = PIL.Image.open(self.image)
+
+        meta = {}
+
+        try:
+            info = img._getexif()
+
+            for tag, value in info.items():
+                decoded = TAGS.get(tag, tag)
+                meta[decoded] = value
+        except AttributeError:
+            pass
+
+        self.meta = meta
+
+        super(Image, self).save(*args, **kwargs)
 
 
 class UploadToken(models.Model):
