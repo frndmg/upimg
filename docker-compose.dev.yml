@@ -6,7 +6,7 @@ services:
     environment:
     - POSTGRES_PASSWORD=mysecretpassword
     volumes:
-    - ./db:/var/lib/postgresql/data
+    - db:/var/lib/postgresql/data
     - ./postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     ports:
     - 5432:5432
@@ -23,7 +23,7 @@ services:
     - MINIO_ACCESS_KEY=AKIAIOSFODNN7EXAMPLE
     - MINIO_SECRET_KEY=wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY
     volumes:
-    - ./fs:/data
+    - fs:/data
     ports:
     - 9000:9000
 
@@ -36,3 +36,7 @@ services:
     - .:/app
     ports:
     - 8000:8000
+
+volumes:
+  db:
+  fs:
