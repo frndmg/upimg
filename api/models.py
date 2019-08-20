@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import HStoreField, JSONField
+from django.utils import timezone
 
 import PIL
 from PIL.ExifTags import TAGS
@@ -41,4 +42,4 @@ class UploadToken(models.Model):
 
     @property
     def expired(self):
-        return self.expire_at >= timezone.now
+        return self.expire_at <= timezone.now()
