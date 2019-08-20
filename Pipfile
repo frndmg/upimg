@@ -9,6 +9,9 @@ autopep8 = "*"
 [packages]
 django = "*"
 pillow = "*"
+postgres = "*"
+django-minio-storage = "*"
+djangorestframework = "*"
 
 [requires]
 python_version = "3.6"
