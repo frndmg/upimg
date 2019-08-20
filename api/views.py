@@ -4,7 +4,7 @@ import imghdr
 
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseServerError
 from django.utils.crypto import get_random_string
 
 from rest_framework import views
@@ -61,12 +61,13 @@ def upload_image(req, token):
 @permission_classes([AllowAny])
 def get_image(req, pk):
     image = get_object_or_404(models.Image, pk=pk)
-    fp = image.image.open()
-    fmt = imghdr.what(fp) or '*'
-    data = fp.read()
-    fp.close()
-    return HttpResponse(data, content_type='image/{}'.format(fmt))
 
+    with image.image.open() as fp:
+        data = fp.read()
+        fmt = image.meta.get('format', imghdr.what(fp))
+        return HttpResponse(data, content_type='image/{}'.format(fmt))
+
+    return HttpResponseServerError('problem reading image')
 
 @api_view(['GET'])
 def statistics(req):
