@@ -13,6 +13,9 @@ createsuperuser:
 web-shell:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run web bash
 
+logs:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml logs -f
+
 clean: down
 	docker volume rm upimg_fs upimg_db
 
