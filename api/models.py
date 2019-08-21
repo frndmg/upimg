@@ -26,22 +26,32 @@ class Image(models.Model):
 
     uploaded_at = models.DateTimeField(auto_now=True)
 
-    def exif_meta(self):
-        meta = {}
-        self.image.seek(0)
-        img = PIL.Image.open(self.image)
-
+    @staticmethod
+    def get_exif(img):
+        exif = {}
         try:
             info = img._getexif()
             for tag, value in info.items():
                 decoded = TAGS.get(tag, tag)
-                meta[decoded] = value
+                exif[decoded] = value
         except AttributeError:
             pass
+        return exif
+
+    def get_meta(self):
+        self.image.seek(0)
+        img = PIL.Image.open(self.image)
+
+        meta = self.get_exif(img)
+
         meta['format'] = img.format
+
+        meta['width'] = img.width
+        meta['height'] = img.height
+
         return meta
 
-    def compute_digest(self):
+    def get_digest(self):
         h = hashlib.sha1()
         self.image.seek(0)
 
@@ -54,16 +64,8 @@ class Image(models.Model):
         return h.hexdigest()
 
     def save(self, *args, **kwargs):
-        digest = self.compute_digest()
-
-        image = Image.objects.filter(digest=digest).first()
-        if image is not None:
-            image = image.image
-            log.debug('using existant image: {}'.format(self.image))
-            self.image = image
-
-        self.digest = digest
-        self.meta = self.exif_meta()
+        self.digest = self.get_digest()
+        self.meta = self.get_meta()
 
         super(Image, self).save(*args, **kwargs)
 
