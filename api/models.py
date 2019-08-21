@@ -22,9 +22,14 @@ class Image(models.Model):
     image = models.ImageField(upload_to='images/')
     meta = HStoreField()
 
-    digest = models.CharField(max_length=64, blank=True, editable=False)
+    digest = models.CharField(max_length=64, blank=True, editable=False, unique=True)
 
     uploaded_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['digest']),
+        ]
 
     @staticmethod
     def get_exif(img):
@@ -74,13 +79,18 @@ class Image(models.Model):
 
 
 class UploadToken(models.Model):
-    token = models.CharField(max_length=256)
+    token = models.CharField(max_length=256, unique=True)
 
     expire_at = models.DateTimeField()
     created_at = models.DateTimeField(auto_now=True)
 
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='tokens')
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['token']),
+        ]
 
     @property
     def expired(self):
