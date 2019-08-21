@@ -8,7 +8,7 @@ class ImageUploadPermission(BasePermission):
     def has_permission(self, req, view):
         token = req.resolver_match.kwargs.get('token')
         try:
-            up_token = models.UploadToken.objects.filter(token=token).get()
+            up_token = models.UploadToken.objects.get(token=token)
         except models.UploadToken.DoesNotExist:
             return False
 
