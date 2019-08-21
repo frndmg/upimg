@@ -19,7 +19,14 @@ class ListImageSerializer(serializers.Serializer):
 
         data = []
         for img in images:
-            img = models.Image.objects.create(image=img, **validated_data)
+            img = models.Image(image=img, **validated_data)
+            digest = img.get_digest()
+
+            try:
+                img = models.Image.objects.get(digest=digest)
+            except models.Image.DoesNotExist:
+                img.save()
+
             data.append(img.id)
 
         return data
