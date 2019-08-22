@@ -9,9 +9,8 @@ Actually any user could do the job but better to have super powers, no?
 
 ```bash
 $ make up
-$ make web-shell
-(container)$ ./manage.py migrate
-(container)$ ./manage.py createsuperuser
+$ make migrate
+$ make createsuperuser
 Username (leave blank to use 'root'): admin
 Email address: admin@email.com
 Password: ***** (admin)
